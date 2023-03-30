@@ -1,0 +1,6 @@
+.idea/
+!.idea/codeStyleSettings.xml
+*.iml
+.gradle/
+build/
+local.properties
