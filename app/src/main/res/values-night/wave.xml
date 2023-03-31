@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="wave_handle_touch_distance">32dp</dimen>
+    <color name="wave_graph_color">#1565C0</color>
+    <color name="wave_background">#B2000000</color>
+    <color name="wave_handle_inactive">#7A7A7A</color>
+    <color name="wave_handle_active">@color/white</color>
+    <color name="wave_shadow">#B2000000</color>
+</resources>

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WaveLab</string>
+
+    <string name="import_wave">Import</string>
+    <string name="export_wave">Export</string>
+    <string name="reset_wave_selection">Reset</string>
 </resources>
