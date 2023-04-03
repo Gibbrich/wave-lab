@@ -3,6 +3,7 @@ package com.gibbrich.wavelab.data
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.annotation.WorkerThread
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -30,7 +31,12 @@ class ResourceManagerImpl(private val context: Context) : ResourceManager {
 }
 
 interface ResourceManager {
+    @WorkerThread
     fun openOutputStream(uri: Uri, mode: String): OutputStream?
+
+    @WorkerThread
     fun openInputStream(uri: Uri): InputStream?
+
+    @WorkerThread
     fun getFileName(uri: Uri): String
 }

@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
+import androidx.core.graphics.withSave
 import com.gibbrich.wavelab.R
 import com.gibbrich.wavelab.model.WaveGraph
 import com.gibbrich.wavelab.model.WavePoint
@@ -100,12 +101,12 @@ class WaveView @JvmOverloads constructor(
         }
     }
 
-    override fun onDraw(canvas: Canvas) {
-        canvas.translate(paddingStart.toFloat(), paddingTop.toFloat())
+    override fun onDraw(canvas: Canvas) = canvas.withSave {
+        translate(paddingStart.toFloat(), paddingTop.toFloat())
 
         if (hasData()) {
             // draw graph
-            canvas.drawPath(graphPath, graphPaint)
+            drawPath(graphPath, graphPaint)
 
             // draw shadows before and after selection handles
             drawShadow(canvas, 0, startHandle.visualPosition)
