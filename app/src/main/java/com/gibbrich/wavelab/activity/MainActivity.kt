@@ -5,18 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.gibbrich.wavelab.R
 import com.gibbrich.wavelab.data.ResourceManager
 import com.gibbrich.wavelab.databinding.ActivityMainBinding
 import com.gibbrich.wavelab.di.DI
 import com.gibbrich.wavelab.main.MainViewModel
 import com.gibbrich.wavelab.main.MainViewModelFactory
+import com.gibbrich.wavelab.main.WaveLoadError
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -75,13 +78,36 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            waveView.onSelectedPointsChanged = viewModel::onWaveSelectionChanged
+            // wave load error
+            lifecycleScope.launch {
+                viewModel.waveLoadError.collect {
+                    val errorMessageId = when (it) {
+                        WaveLoadError.Export -> R.string.export_wave_error
+                        WaveLoadError.Import -> R.string.import_wave_error
+                    }
+
+                    Snackbar
+                        .make(binding.root, errorMessageId, Snackbar.LENGTH_SHORT)
+                        .setBackgroundTint(this@MainActivity.getColor(R.color.red))
+                        .setTextColor(this@MainActivity.getColor(R.color.white))
+                        .show()
+                }
+            }
+
+            // wave loading
+            lifecycleScope.launch {
+                viewModel.waveLoading.collect { isVisible ->
+                    activityMainLoadingIndicator.visibility = if (isVisible) View.VISIBLE else View.GONE
+                }
+            }
+
+            activityMainWaveView.onSelectedPointsChanged = viewModel::onWaveSelectionChanged
 
             lifecycleScope.launch {
                 viewModel.wave.collect { wave ->
                     if (wave != null) {
                         waveName.text = wave.name
-                        waveView.setData(wave.data)
+                        activityMainWaveView.setData(wave.data)
                     }
                 }
             }
@@ -91,7 +117,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateSelection() =
-        binding.waveView.setSelection(viewModel.selectionPoints.first, viewModel.selectionPoints.second)
+        binding.activityMainWaveView.setSelection(viewModel.selectionPoints.first, viewModel.selectionPoints.second)
 
     private fun handleFileSelectionResult(uri: Uri?) = uri?.let(viewModel::onFileSelected)
     private fun handleSaveFileResult(uri: Uri?) = uri?.let(viewModel::onExportFileRequest)

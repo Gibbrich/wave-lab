@@ -4,4 +4,7 @@
     <string name="import_wave">Import</string>
     <string name="export_wave">Export</string>
     <string name="reset_wave_selection">Reset</string>
+
+    <string name="import_wave_error">Failed import wave data</string>
+    <string name="export_wave_error">Failed export wave data</string>
 </resources>
