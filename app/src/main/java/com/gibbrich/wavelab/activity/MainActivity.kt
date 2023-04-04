@@ -10,14 +10,28 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.gibbrich.wavelab.data.ResourceManager
 import com.gibbrich.wavelab.databinding.ActivityMainBinding
+import com.gibbrich.wavelab.di.DI
 import com.gibbrich.wavelab.main.MainViewModel
+import com.gibbrich.wavelab.main.MainViewModelFactory
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
+/**
+ * NOTE - in real life app should be done using single activity approach.
+ * This means all code below should be extracted in a separate fragment, activity should be only a container
+ * for fragments. In this case I decided to keep things simple and do not add extra layer of abstraction
+ */
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var resourceManager: ResourceManager
     private lateinit var binding: ActivityMainBinding
-    private val viewModel by viewModels<MainViewModel>()
+
+    private val viewModel by viewModels<MainViewModel> {
+        MainViewModelFactory(resourceManager)
+    }
 
     private lateinit var fileSelectLauncher: ActivityResultLauncher<Unit>
     private lateinit var fileSaveLauncher: ActivityResultLauncher<Unit>
@@ -25,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        DI.appComponent.inject(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         fileSelectLauncher =
             registerForActivityResult(FileSelectContract(), ::handleFileSelectionResult)

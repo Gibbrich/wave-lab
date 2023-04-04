@@ -2,9 +2,9 @@ package com.gibbrich.wavelab.main
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gibbrich.wavelab.data.ResourceManager
-import com.gibbrich.wavelab.di.DI
 import com.gibbrich.wavelab.model.Wave
 import com.gibbrich.wavelab.model.WavePoint
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 
 /**
@@ -20,10 +19,7 @@ import javax.inject.Inject
  * 1. Notify user in case of wave data load/save error
  * 2. Handle case large files read/write - add loader and make these operations cancelable
  */
-class MainViewModel : ViewModel() {
-    @Inject
-    lateinit var resourceManager: ResourceManager
-
+class MainViewModel(private val resourceManager: ResourceManager) : ViewModel() {
     private val _wave = MutableStateFlow<Wave?>(null)
     val wave: StateFlow<Wave?> = _wave
 
@@ -35,10 +31,6 @@ class MainViewModel : ViewModel() {
 
     var selectionPoints = 0 to 0
         private set
-
-    init {
-        DI.appComponent.inject(this)
-    }
 
     fun onFileSelected(uri: Uri) {
         viewModelScope.launch {
@@ -81,5 +73,11 @@ class MainViewModel : ViewModel() {
 
     fun onResetSelectionRequest() {
         onWaveSelectionChanged(0, _wave.value?.data?.lastIndex ?: 0)
+    }
+}
+
+class MainViewModelFactory(private val resourceManager: ResourceManager): ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return MainViewModel(resourceManager) as T
     }
 }
